@@ -11,72 +11,88 @@ Lista *lst_cria(){
     return (Lista*)NULL;
 }
 
-
-Lista *lst_insere(Lista *l, int valor){
-    //AQUI ESTÁ INSERINDO NO INÍCIO
-    Lista *aux, *novo = (Lista*) malloc(sizeof(Lista));
-    if (novo == NULL){
-        printf("\nFALHA DE ALOCAÇÃO DE MEMÓRIA");
-        exit(1); // término com falha
+Lista *lst_exclui(Lista *l,int valor){
+    Lista *aux,*ant;
+    ant = aux = l;
+    while (aux!=NULL && aux->chave != valor){
+        ant = aux;
+        aux = aux->prox;
     }
-    novo->chave = valor;
-    novo->prox = NULL;
-    if (l == NULL)
-        l = novo;
-    else{
-        aux = l;
-        while(aux->prox != NULL)
-            aux = aux->prox;
-        aux->prox = novo;
-    }
-    return l; // lista atualizada
-}
-
-Lista *lst_insere_ordenado(Lista *l, int valor){
-    Lista *aux = l,*ant, *novo = (Lista*)malloc(sizeof(Lista));
-    aux = l;
-    ant = NULL;
-    if (novo == NULL){
-        printf("\nFALHA DE ALOCAÇÃO DE MEMÓRIA");
-        exit(1); // término com falha
-    }
-    novo->chave = valor;
-    if (aux == NULL){
-        novo->prox = NULL;
-        l = novo;
+    if (aux){ // if (aux != NULL)
+        if (aux == l) // testa se é o primeiro nó
+           l = aux->prox;
+        else
+            ant->prox = aux->prox;
+        free(aux); // exclui aux  da memória
     }else{
-        while(aux != NULL && aux->chave < valor){
-            ant = aux;
-            aux = aux->prox;
-        }
-        novo->prox = aux;
-        if(ant == NULL){
-            l = novo;
-        }else{
-            ant->prox = novo;
-        }
+        printf("\nChave %d não encontrada!!\n", valor);
     }
     return l;
 }
 
-lst_concatenar(Lista* l1, Lista* l2){
-    Lista *aux1, *aux2, *novo = (Lista*) malloc(sizeof(Lista));
-free(aux1);
-    if (aux1 || aux2 || novo){
+Lista *lst_concatena(Lista* l1, Lista* l2){
+    Lista *novo, *aux1, *aux2, *aux3, *l3 = (Lista*)malloc(sizeof(Lista));
+
+    if (novo == NULL){
         printf("\nFALHA DE ALOCAÇÃO DE MEMÓRIA");
         exit(1); // término com falha
     }
-
     aux1 = l1;
     aux2 = l2;
-
-    while(aux1->prox && aux2->prox){
-        novo = aux1->chave;
-        novo->prox = aux2->chave;
-        aux1 = aux1->prox;
-        aux2 = aux2->prox;
+    aux3 = NULL;
+    if (!aux3){
+        if (aux1->chave <= aux2->chave)
+        {
+            aux3 = aux1;
+            aux1 = aux1->prox;
+        }
+        else{
+            aux3 = aux2;
+            aux2 = aux2->prox;
+        }
+        l3 = aux3;
     }
-    return novo;
+    while (aux1 != NULL && aux2 != NULL){
+        if (aux1 -> chave <= aux2 -> chave){
+            aux3->prox = aux1;
+            aux1 = aux1->prox;
+            aux3 = aux3->prox;
+
+        }
+        else{
+            aux3->prox = aux2;
+            aux2 = aux2->prox;
+            aux3 = aux3->prox;
+        }
+    }
+    if (aux1 == NULL){
+        while (aux2 != NULL){
+            aux3->prox = aux2;
+            aux2 = aux2->prox;
+            aux3 = aux3->prox;
+        }
+    }
+    else{
+        while (aux1 != NULL){
+            aux3->prox = aux1;
+            aux1 = aux1->prox;
+            aux3 = aux3->prox;
+        }
+    }
+    return l3;
+}
+
+
+Lista *lst_insere(Lista *l, int valor){
+    Lista *novo = (Lista*)malloc(sizeof(Lista));
+    if (novo == NULL){
+        printf("\nFALHA DE ALOCAÇÃO DE MEMÓRIA");
+        exit(1); // término com falha
+    }
+    novo->chave = valor;
+    novo->prox = l;
+    l = novo;
+    return l; // lista atualizada
 }
 
 void imprime(Lista *l){
@@ -90,14 +106,25 @@ void imprime(Lista *l){
     }
 }
 
+void lst_consulta(Lista *l, int valor){
+    Lista *aux = l;
+    while (aux && aux->chave != valor)
+        aux = aux->prox;
+    if (aux!= NULL)
+        printf("O Valor %d está na lista", valor);
+    else
+        printf("O valor %d nao está na lista", valor);
+}
+
 int menu(){
 	int opcao;
 	do{
-		printf("\n\n1 - Inserir na lista 1");
-		printf("\n2 - Inserir na lista 2");
-		printf("\n3 - Concatenar");
+		printf("\n1 - Inserir");
+		printf("\n2 - Excuir");
+		printf("\n3 - Consultar");
 		printf("\n4 - Imprimir");
-		printf("\n5 - Sair\nEscolha sua opcao:");
+		printf("\n5 - Concatena");
+		printf("\n6 - Sair\nEscolha sua opcao:");
 		scanf("%d", &opcao);
 	} while( opcao <1 || opcao>5);
 	return opcao;
@@ -112,30 +139,44 @@ int main(){
         op=menu();
         switch(op){
     		case 1:
-    		    printf("\nValor a ser inserido = ");
+    		    printf("\nValor a ser inserido =");
     		    scanf("%d",&valor);
     			inicio = lst_insere(inicio,valor);
-                break;
-    		case 2:
-                printf("\nValor a ser inserido = ");
+    			printf("\nValor a ser inserido =");
     		    scanf("%d",&valor2);
     			inicio2 = lst_insere(inicio2,valor2);
+                break;
+    		case 2:
+                printf("\nValor a ser excluído =");
+    		    scanf("%d",&valor);
+    			inicio = lst_exclui(inicio,valor);
+    			scanf("%d",&valor2);
+    			inicio2 = lst_exclui(inicio2,valor2);
     			break;
     		case 3:
-    		    inicio3 = lst_concatenar(inicio, inicio2);
-    		    imprime(inicio3);
+                printf("\nValor a ser procurado =");
+                scanf("%d",&valor);
+                lst_consulta(inicio, valor);
+                scanf("%d",&valor2);
+                lst_consulta(inicio2, valor2);
     			break;
     		case 4: // imprimir
     			imprime(inicio);
     			imprime(inicio2);
+    			imprime(inicio3);
     			break;
     		case 5:
+    		    inicio3 = lst_concatena(inicio, inicio2);
+    		    imprime(inicio3);
     		    break;
+            case 6:
+                exit(1);
+                break;
     		default:
     			// do anything
     			break;
     	};
-    }while ( op <= 4);
+    }while ( op!= 6);
         free(inicio);
     return 0;
 }
