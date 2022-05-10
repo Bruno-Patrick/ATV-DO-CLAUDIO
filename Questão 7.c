@@ -13,14 +13,22 @@ Lista *lst_cria(){
 
 
 Lista *lst_insere(Lista *l, int valor){
-    Lista *novo = (Lista*)malloc(sizeof(Lista));
+    //AQUI ESTÁ INSERINDO NO INÍCIO
+    Lista *aux, *novo = (Lista*) malloc(sizeof(Lista));
     if (novo == NULL){
         printf("\nFALHA DE ALOCAÇÃO DE MEMÓRIA");
         exit(1); // término com falha
     }
     novo->chave = valor;
-    novo->prox = l;
-    l = novo;
+    novo->prox = NULL;
+    if (l == NULL)
+        l = novo;
+    else{
+        aux = l;
+        while(aux->prox != NULL)
+            aux = aux->prox;
+        aux->prox = novo;
+    }
     return l; // lista atualizada
 }
 
@@ -51,22 +59,22 @@ Lista *lst_insere_ordenado(Lista *l, int valor){
     return l;
 }
 
-void lst_concatenar(Lista* l1, Lista* l2){
-    Lista *novo = (Lista*) malloc(sizeof(Lista));
-
-    if (novo == NULL){
+lst_concatenar(Lista* l1, Lista* l2){
+    Lista *aux1, *aux2, *novo = (Lista*) malloc(sizeof(Lista));
+free(aux1);
+    if (aux1 || aux2 || novo){
         printf("\nFALHA DE ALOCAÇÃO DE MEMÓRIA");
         exit(1); // término com falha
     }
 
-    Lista *aux, *aux1;
-    aux = l1;
-    aux1 = l2;
-    novo->prox = NULL;
-    while(aux && aux->prox){
-        novo->chave = aux->chave;
-        aux = aux->prox;
-        novo = novo->prox;
+    aux1 = l1;
+    aux2 = l2;
+
+    while(aux1->prox && aux2->prox){
+        novo = aux1->chave;
+        novo->prox = aux2->chave;
+        aux1 = aux1->prox;
+        aux2 = aux2->prox;
     }
     return novo;
 }
@@ -98,6 +106,7 @@ int menu(){
 int main(){
     Lista *inicio = lst_cria();
     Lista *inicio2 = lst_cria();
+    Lista *inicio3 = lst_cria();
     int op = 0, valor, valor2;
     do{
         op=menu();
@@ -113,8 +122,8 @@ int main(){
     			inicio2 = lst_insere(inicio2,valor2);
     			break;
     		case 3:
-                lst_concatenar(inicio, inicio2);
-    		    imprime(inicio);
+    		    inicio3 = lst_concatenar(inicio, inicio2);
+    		    imprime(inicio3);
     			break;
     		case 4: // imprimir
     			imprime(inicio);
