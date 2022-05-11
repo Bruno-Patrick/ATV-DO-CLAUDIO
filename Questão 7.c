@@ -40,7 +40,7 @@ Lista *lst_concatena(Lista* l1, Lista* l2){
     aux1 = l1;
     aux2 = l2;
     aux3 = NULL;
-    if (!aux3){
+    if (aux3 == NULL){
         if (aux1->chave <= aux2->chave)
         {
             aux3 = aux1;
