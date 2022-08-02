@@ -1,0 +1,13 @@
+CREATE TABLE agencia(nome_agencia VARCHAR(30) NOT NULL, cidade_agencia VARCHAR(30), ativo INT, PRIMARY KEY (nome_agencia));
+
+CREATE TABLE cliente(nome_cliente VARCHAR(30) PRIMARY KEY, rua_cliente VARCHAR(30) NOT NULL, cidade_cliente VARCHAR(30) NOT NULL);
+
+CREATE TABLE conta(numero_conta VARCHAR(8) PRIMARY KEY, nome_agencia VARCHAR(30), saldo DECIMAL(8,2),
+    FOREIGN KEY(nome_agencia) REFERENCES agencia(nome_agencia) );
+
+CREATE TABLE emprestimo(numero_emprestimo VARCHAR(8) PRIMARY KEY, nome_agencia VARCHAR(30) NOT NULL, quantia DECIMAL(8,2),
+    FOREIGN KEY(nome_agencia) REFERENCES agencia(nome_agencia) );
+
+CREATE TABLE depositante(nome_cliente VARCHAR(30) NOT NULL PRIMARY KEY, numero_conta VARCHAR(8) NOT NULL,
+    FOREIGN KEY(numero_conta) REFERENCES conta(numero_conta),
+    FOREIGN KEY(nome_cliente) REFERENCES cliente(nome_cliente) );
