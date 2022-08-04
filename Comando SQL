@@ -11,3 +11,11 @@ CREATE TABLE emprestimo(numero_emprestimo VARCHAR(8) PRIMARY KEY, nome_agencia V
 CREATE TABLE depositante(nome_cliente VARCHAR(30) NOT NULL PRIMARY KEY, numero_conta VARCHAR(8) NOT NULL,
     FOREIGN KEY(numero_conta) REFERENCES conta(numero_conta),
     FOREIGN KEY(nome_cliente) REFERENCES cliente(nome_cliente) );
+    
+INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES ("Banco do Brasil", "Rio Branco", 1);
+INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES ("Santander", "Cruzeiro do Sul", 0);
+INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES ("Itaú", "Sena Madureira", 1);
+INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES ("Nao sei", "Xapurí", 1);
+INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES ("Nao seis", "Xapurí", 1);
+
+SELECT * FROM agencia WHERE cidade_agencia LIKE "Xapurí";
