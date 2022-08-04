@@ -12,10 +12,19 @@ CREATE TABLE depositante(nome_cliente VARCHAR(30) NOT NULL PRIMARY KEY, numero_c
     FOREIGN KEY(numero_conta) REFERENCES conta(numero_conta),
     FOREIGN KEY(nome_cliente) REFERENCES cliente(nome_cliente) );
     
+CREATE TABLE tomador(nome_cliente VARCHAR(60) NOT NULL, numero_emprestimo VARCHAR(8) NOT NULL,
+    FOREIGN KEY(nome_cliente) REFERENCES cliente(nome_cliente), FOREIGN KEY(numero_emprestimo) REFERENCES emprestimo(numero_emprestimo) );
+    
 INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES ("Banco do Brasil", "Rio Branco", 1);
 INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES ("Santander", "Cruzeiro do Sul", 0);
 INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES ("Itaú", "Sena Madureira", 1);
 INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES ("Nao sei", "Xapurí", 1);
 INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES ("Nao seis", "Xapurí", 1);
 
-SELECT * FROM agencia WHERE cidade_agencia LIKE "Xapurí";
+INSERT INTO emprestimo(numero_emprestimo, nome_agencia, quantia) VALUES (13, "Banco do Brasil", 100);
+INSERT INTO emprestimo(numero_emprestimo, nome_agencia, quantia) VALUES (133, "Santander", 150);
+INSERT INTO emprestimo(numero_emprestimo, nome_agencia, quantia) VALUES (1333, "MACHINE LEARNING", 150);
+
+SELECT ativo FROM emprestimo e, agencia a WHERE e.nome_agencia = a.nome_agencia;
+
+SELECT MAX(e.quantia) FROM emprestimo e;
