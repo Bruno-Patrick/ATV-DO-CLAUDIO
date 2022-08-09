@@ -1,30 +1,61 @@
-CREATE TABLE agencia(nome_agencia VARCHAR(30) NOT NULL, cidade_agencia VARCHAR(30), ativo INT, PRIMARY KEY (nome_agencia));
+CREATE TABLE agencia(nome_agencia VARCHAR(30) NOT NULL PRIMARY KEY, cidade_agencia VARCHAR(30) DEFAULT 'Rio Branco', ativo INT CHECK(ativo = 1 OR ativo =0));
 
-CREATE TABLE cliente(nome_cliente VARCHAR(30) PRIMARY KEY, rua_cliente VARCHAR(30) NOT NULL, cidade_cliente VARCHAR(30) NOT NULL);
+-- DEFAULT -> serve para colocar um valor padrão caso nao seja inserido um valor
+-- CHECK -> serve para definir o escopo da variável, caso ela tenha valores diferentes dos definidos, não aceitará
+-- NOT NULL -> não aceita valores nulos
+-- VARCAHAR -> alocação dinâmica, diferente de CHAR que aloca o tamanho definido
 
-CREATE TABLE conta(numero_conta VARCHAR(8) PRIMARY KEY, nome_agencia VARCHAR(30), saldo DECIMAL(8,2),
-    FOREIGN KEY(nome_agencia) REFERENCES agencia(nome_agencia) );
+CREATE TABLE cliente (nome_cliente VARCHAR(60) NOT NULL PRIMARY KEY, rua_cliente VARCHAR(30) NOT NULL, cidade_cliente VARCHAR(30) NOT NULL);
 
-CREATE TABLE emprestimo(numero_emprestimo VARCHAR(8) PRIMARY KEY, nome_agencia VARCHAR(30) NOT NULL, quantia DECIMAL(8,2),
-    FOREIGN KEY(nome_agencia) REFERENCES agencia(nome_agencia) );
+CREATE TABLE conta (numero_conta CHAR(8) NOT NULL PRIMARY KEY, nome_agencia VARCHAR(30) NOT NULL, saldo NUMERIC(8,2), FOREIGN KEY(nome_agencia) REFERENCES agencia(nome_agencia)); -- ON DELETE CASCADE;
+-- NUMERIC ou DECIMAL -> numeric(5,3) 999999,999 e numeric(3,2) 999,99 (primeiro paramentro do é o tamanho da casa antes da casa decimal, o segundo parâmetro é o tamanho após a casa decimal)
+-- FOREING KEY -> chave estrangeira, serve para destacar uma chave primaria da tabela atual a partir de outra tabela
+-- REFERENCES -> serve para identificar de qual tabela está sendo pega a chave estrangeira (local original da chave estrangeira)
+-- ON DELETE CACADE -> remove em cascata as chaves presentes em outras tabelas, ou seja ao excluir um registro em uma tabela, um registro relacionado em outra tabela é automaticamente excluído
 
-CREATE TABLE depositante(nome_cliente VARCHAR(30) NOT NULL PRIMARY KEY, numero_conta VARCHAR(8) NOT NULL,
-    FOREIGN KEY(numero_conta) REFERENCES conta(numero_conta),
-    FOREIGN KEY(nome_cliente) REFERENCES cliente(nome_cliente) );
-    
-CREATE TABLE tomador(nome_cliente VARCHAR(60) NOT NULL, numero_emprestimo VARCHAR(8) NOT NULL,
-    FOREIGN KEY(nome_cliente) REFERENCES cliente(nome_cliente), FOREIGN KEY(numero_emprestimo) REFERENCES emprestimo(numero_emprestimo) );
-    
-INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES ("Banco do Brasil", "Rio Branco", 1);
-INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES ("Santander", "Cruzeiro do Sul", 0);
-INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES ("Itaú", "Sena Madureira", 1);
-INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES ("Nao sei", "Xapurí", 1);
-INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES ("Nao seis", "Xapurí", 1);
+CREATE TABLE emprestimo (numero_emprestimo CHAR(8) NOT NULL, nome_agencia VARCHAR(30) NOT NULL, quantia DECIMAL(8,2), FOREIGN KEY(nome_agencia) REFERENCES agencia(nome_agencia));
 
-INSERT INTO emprestimo(numero_emprestimo, nome_agencia, quantia) VALUES (13, "Banco do Brasil", 100);
-INSERT INTO emprestimo(numero_emprestimo, nome_agencia, quantia) VALUES (133, "Santander", 150);
-INSERT INTO emprestimo(numero_emprestimo, nome_agencia, quantia) VALUES (1333, "MACHINE LEARNING", 150);
+CREATE TABLE depositante (nome_cliente VARCHAR(60) NOT NULL, numero_conta CHAR(8), FOREIGN KEY(nome_cliente) REFERENCES cliente(nome_cliente));
 
-SELECT ativo FROM emprestimo e, agencia a WHERE e.nome_agencia = a.nome_agencia;
+CREATE TABLE tomador (nome_cliente VARCHAR(60) NOT NULL, numero_emprestimo VARCHAR(8) NOT NULL, FOREIGN KEY(nome_cliente) REFERENCES cliente(nome_cliente), FOREIGN KEY(numero_emprestimo) REFERENCES emprestimo(numero_emprestimo));
 
-SELECT MAX(e.quantia) FROM emprestimo e;
+INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES('Banco do Luiz', 'Rio Branco', 1);
+INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES('Banco do Danone', 'Xapuri', 0);
+INSERT INTO agencia(nome_agencia, cidade_agencia, ativo) VALUES('Banco do Elias', 'Feijó', 1);
+
+INSERT INTO cliente(nome_cliente, rua_cliente, cidade_cliente) VALUES('Luiz Eduardo', 'Rua Jornal', 'Rio Branco');
+INSERT INTO cliente(nome_cliente, rua_cliente, cidade_cliente) VALUES('Danone Carlos', 'Rua Dones', 'Xapuri');
+INSERT INTO cliente(nome_cliente, rua_cliente, cidade_cliente) VALUES('Elias Cacau', 'Rua Cabral', 'Feijó');
+
+INSERT INTO conta (numero_conta, nome_agencia, saldo) VALUES('12121212', 'Banco do Luiz', 5000.00);
+INSERT INTO conta (numero_conta, nome_agencia, saldo) VALUES('13131313', 'Banco do Danone', 10000.00);
+INSERT INTO conta (numero_conta, nome_agencia, saldo) VALUES('14141414', 'Banco do Elias', 8500.00);
+
+
+INSERT INTO emprestimo(numero_emprestimo, nome_agencia, quantia) VALUES('12345678', 'Banco do Luiz', 1000.00);
+INSERT INTO emprestimo(numero_emprestimo, nome_agencia, quantia) VALUES('12345679', 'Banco do Danone', 2000.00);
+INSERT INTO emprestimo(numero_emprestimo, nome_agencia, quantia) VALUES('12345675', 'Banco do Elias', 3000.00);
+
+
+INSERT INTO depositante(nome_cliente, numero_conta) VALUES('Luiz Eduardo', '12121212');
+INSERT INTO depositante(nome_cliente, numero_conta) VALUES('Danone Carlos', '13131313');
+INSERT INTO depositante(nome_cliente, numero_conta) VALUES('Elias Cacau', '14141414');
+
+INSERT INTO tomador(nome_cliente, numero_emprestimo) VALUES('Luiz Eduardo', '12345678');
+INSERT INTO tomador(nome_cliente, numero_emprestimo) VALUES('Danone Carlos', '12345679');
+INSERT INTO tomador(nome_cliente, numero_emprestimo) VALUES('Elias Cacau', '12345675');
+
+
+ SELECT * FROM emprestimo, tomador;
+
+-- DIFFERENCE(
+-- SELECT DISTINCT saldo 
+-- FROM conta,
+-- SELECT DISTINCT (d.saldo)
+-- FROM conta c, conta d
+-- WHERE c.saldo < d.saldo);
+
+
+-- SELECT MAX(d.saldo) "MÁXIMO"
+-- FROM conta c, conta d
+-- WHERE c.saldo < d.saldo;
